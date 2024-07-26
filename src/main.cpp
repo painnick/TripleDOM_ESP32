@@ -1,42 +1,55 @@
 #include <Arduino.h>
-#include <ServoEasing.hpp>
 
-#include "esp_log.h"
+#define DISABLE_COMPLEX_FUNCTIONS
+#define MAX_EASING_SERVOS 6
+#define DISABLE_MICROS_AS_DEGREE_PARAMETER
+#include <ServoEasing.hpp>
 
 #define MAIN_TAG "main"
 
 #define PIN_SERVO_ARM 27
-#define PIN_SERVO_TABLE 12
+#define PIN_SERVO_TABLE 13
 
-#define DEGREES_PER_SECOND 30
-
-ServoEasing servo1;
-ServoEasing servo2;
+ServoEasing servoArm;
+ServoEasing servoTable;
 
 void setup() {
-    ESP_LOGI(MAIN_TAG, "Connecting OLED...");
-
-    servo1.attach(PIN_SERVO_ARM, 0);
-    servo1.setEasingType(EASE_LINEAR);
-    servo2.attach(PIN_SERVO_TABLE, 90);
-    servo2.setEasingType(EASE_LINEAR);
+    servoArm.attach(PIN_SERVO_ARM, 0);
+    servoArm.setEasingType(EASE_LINEAR);
+    servoTable.attach(PIN_SERVO_TABLE, 90);
+    servoTable.setEasingType(EASE_LINEAR);
 
     delay(5000);
+
+    ESP_LOGI(MAIN_TAG, "It's all set up.");
 }
 
 void loop() {
-//    servo1.startEaseTo(90 - 20, DEGREES_PER_SECOND, START_UPDATE_BY_INTERRUPT);
-//    delay(5 * 1000);
+    ESP_LOGD(MAIN_TAG, "Start this loop!");
 
-    servo2.easeTo(90 +45, DEGREES_PER_SECOND);
-    servo2.easeTo(90 - 45, DEGREES_PER_SECOND);
-    servo2.easeTo(90, DEGREES_PER_SECOND);
+    auto aroundCount = (int) random(1, 3);
+    ESP_LOGD(MAIN_TAG, "Look around %d time(s).", aroundCount);
+
+    for (auto i = 0; i < aroundCount; i++) {
+        auto degreesPerSecond = (int) random(30, 60);
+        ESP_LOGD(MAIN_TAG, "[%d] (Around) Degrees per second is %d", i + 1, degreesPerSecond);
+        servoTable.easeTo(90 + (int) random(15, 45), degreesPerSecond);
+        delay(500);
+        servoTable.easeTo(90 - (int) random(15, 45), degreesPerSecond);
+        delay(500);
+    }
+
+    delay(1 * 1000);
+
+    {
+        auto degreesPerSecond = (int) random(60, 90);
+        ESP_LOGD(MAIN_TAG, "(Table) Degrees per second is %d", degreesPerSecond);
+        servoArm.easeTo(45, degreesPerSecond);
+        delay(2 * 1000);
+        servoArm.easeTo(0, degreesPerSecond);
+    }
+
+    ESP_LOGD(MAIN_TAG, "Ends this loop.");
 
     delay(2 * 1000);
-
-    servo1.easeTo(45, DEGREES_PER_SECOND);
-    delay(3 * 1000);
-
-    servo1.easeTo(0, DEGREES_PER_SECOND);
-    delay(10 * 1000);
 }
