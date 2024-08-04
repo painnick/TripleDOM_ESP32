@@ -1,25 +1,33 @@
 #include <Arduino.h>
 
+// Logger
+#define MAIN_TAG "main"
+
+// Servo
 #define DISABLE_COMPLEX_FUNCTIONS
 #define MAX_EASING_SERVOS 6
 #define DISABLE_MICROS_AS_DEGREE_PARAMETER
 #include <ServoEasing.hpp>
 
-#define MAIN_TAG "main"
+// Program
+#include "common.h"
+#include "controllers/Mp3Controller.h"
 
-#define PIN_SERVO_ARM 27
-#define PIN_SERVO_TABLE 13
-
-ServoEasing servoArm;
-ServoEasing servoTable;
+ServoEasing servo1Arm;
+ServoEasing servo1Table;
 
 void setup() {
-    servoArm.attach(PIN_SERVO_ARM, 0);
-    servoArm.setEasingType(EASE_LINEAR);
-    servoTable.attach(PIN_SERVO_TABLE, 90);
-    servoTable.setEasingType(EASE_LINEAR);
+    servo1Arm.attach(PIN_SERVO1_ARM, 0);
+    servo1Arm.setEasingType(EASE_LINEAR);
+    servo1Table.attach(PIN_SERVO1_TABLE, 90);
+    servo1Table.setEasingType(EASE_LINEAR);
 
-    delay(5000);
+    setupSound();
+
+    delay(2000);
+
+    dfmp3.loopFolder(1); // BGM
+    dfmp3.loop();
 
     ESP_LOGI(MAIN_TAG, "It's all set up.");
 }
@@ -33,10 +41,10 @@ void loop() {
     for (auto i = 0; i < aroundCount; i++) {
         auto degreesPerSecond = (int) random(30, 60);
         ESP_LOGD(MAIN_TAG, "[%d] (Around) Degrees per second is %d", i + 1, degreesPerSecond);
-        servoTable.easeTo(90 + (int) random(15, 45), degreesPerSecond);
-        delay(500);
-        servoTable.easeTo(90 - (int) random(15, 45), degreesPerSecond);
-        delay(500);
+        servo1Table.easeTo(90 + (int) random(15, 45), degreesPerSecond);
+        delayWithLoop(500);
+        servo1Table.easeTo(90 - (int) random(15, 45), degreesPerSecond);
+        delayWithLoop(500);
     }
 
     delay(1 * 1000);
@@ -44,12 +52,12 @@ void loop() {
     {
         auto degreesPerSecond = (int) random(60, 90);
         ESP_LOGD(MAIN_TAG, "(Table) Degrees per second is %d", degreesPerSecond);
-        servoArm.easeTo(45, degreesPerSecond);
-        delay(2 * 1000);
-        servoArm.easeTo(0, degreesPerSecond);
+        servo1Arm.easeTo(45, degreesPerSecond);
+        delayWithLoop(2 * 1000);
+        servo1Arm.easeTo(0, degreesPerSecond);
     }
 
     ESP_LOGD(MAIN_TAG, "Ends this loop.");
 
-    delay(2 * 1000);
+    delayWithLoop(2 * 1000);
 }
