@@ -7,5 +7,20 @@
 #define PIN_MP3_TX 33 // dfplayer(FIXED)
 #define PIN_MP3_RX 32 // dfplayer(FIXED)
 
-#define PIN_SERVO1_ARM 12
-#define PIN_SERVO1_TABLE 23
+// DOM1
+#define PIN_SERVO1_TABLE 14
+#define PIN_SERVO1_ARM 17
+#define SR_EYE1 0
+#define SR_BAZUKA1 1
+
+// DOM2
+#define PIN_SERVO2_TABLE 4
+#define PIN_SERVO2_ARM 18
+#define SR_EYE2 2
+#define SR_BAZUKA2 3
+
+// DOM3
+#define PIN_SERVO3_TABLE 19
+#define PIN_SERVO3_ARM 23
+#define SR_EYE3 4
+#define SR_BAZUKA3 5

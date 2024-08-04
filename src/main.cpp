@@ -12,17 +12,18 @@
 // Program
 #include "common.h"
 #include "controllers/Mp3Controller.h"
+#include "controllers/DOMController.h"
 
-ServoEasing servo1Arm;
-ServoEasing servo1Table;
+DOMController DOM1(PIN_SERVO1_TABLE, PIN_SERVO1_ARM, SR_EYE1, SR_BAZUKA1);
+DOMController DOM2(PIN_SERVO2_TABLE, PIN_SERVO2_ARM, SR_EYE2, SR_BAZUKA2);
+DOMController DOM3(PIN_SERVO3_TABLE, PIN_SERVO3_ARM, SR_EYE3, SR_BAZUKA3);
 
 void setup() {
-    servo1Arm.attach(PIN_SERVO1_ARM, 0);
-    servo1Arm.setEasingType(EASE_LINEAR);
-    servo1Table.attach(PIN_SERVO1_TABLE, 90);
-    servo1Table.setEasingType(EASE_LINEAR);
-
     setupSound();
+
+    DOM1.setup();
+    DOM2.setup();
+    DOM3.setup();
 
     delay(2000);
 
@@ -35,27 +36,24 @@ void setup() {
 void loop() {
     ESP_LOGD(MAIN_TAG, "Start this loop!");
 
-    auto aroundCount = (int) random(1, 3);
-    ESP_LOGD(MAIN_TAG, "Look around %d time(s).", aroundCount);
-
-    for (auto i = 0; i < aroundCount; i++) {
-        auto degreesPerSecond = (int) random(30, 60);
-        ESP_LOGD(MAIN_TAG, "[%d] (Around) Degrees per second is %d", i + 1, degreesPerSecond);
-        servo1Table.easeTo(90 + (int) random(15, 45), degreesPerSecond);
-        delayWithLoop(500);
-        servo1Table.easeTo(90 - (int) random(15, 45), degreesPerSecond);
-        delayWithLoop(500);
+    auto aroundCount1 = (int) random(1, 3);
+    for (auto i = 0; i < aroundCount1; i++) {
+        DOM1.turnTable();
+    }
+    auto aroundCount2 = (int) random(1, 3);
+    for (auto i = 0; i < aroundCount2; i++) {
+        DOM2.turnTable();
+    }
+    auto aroundCount3 = (int) random(1, 3);
+    for (auto i = 0; i < aroundCount3; i++) {
+        DOM3.turnTable();
     }
 
     delay(1 * 1000);
 
-    {
-        auto degreesPerSecond = (int) random(60, 90);
-        ESP_LOGD(MAIN_TAG, "(Table) Degrees per second is %d", degreesPerSecond);
-        servo1Arm.easeTo(45, degreesPerSecond);
-        delayWithLoop(2 * 1000);
-        servo1Arm.easeTo(0, degreesPerSecond);
-    }
+    DOM1.turnArm();
+    DOM2.turnArm();
+    DOM3.turnArm();
 
     ESP_LOGD(MAIN_TAG, "Ends this loop.");
 
